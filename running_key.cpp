@@ -13,7 +13,7 @@ char numToChar(int n)
     return 'A' + (n % 26);
 }
 
-// Clean text: keep only letters and convert to uppercase
+// Clean text
 string cleanText(string s)
 {
     string res = "";
@@ -25,7 +25,7 @@ string cleanText(string s)
     return res;
 }
 
-// Running Key Cipher Encryption
+// Encryption
 string encryptRunningKey(string plaintext, string key)
 {
     plaintext = cleanText(plaintext);
@@ -44,14 +44,29 @@ string encryptRunningKey(string plaintext, string key)
         int p = charToNum(plaintext[i]);
         int k = charToNum(key[i]);
 
-        int c = (p + k) % 26;
-        ciphertext += numToChar(c);
+        ciphertext += numToChar((p + k) % 26);
     }
 
     return ciphertext;
 }
 
-// FNV-1a 32-bit hash function
+// Decryption
+string decryptRunningKey(string ciphertext, string key)
+{
+    string plaintext = "";
+
+    for (int i = 0; i < ciphertext.length(); i++)
+    {
+        int c = charToNum(ciphertext[i]);
+        int k = charToNum(key[i]);
+
+        plaintext += numToChar((c - k + 26) % 26);
+    }
+
+    return plaintext;
+}
+
+// FNV-1a Hash
 uint32_t fnv1a(string text)
 {
     uint32_t hash = 2166136261u;
@@ -83,7 +98,7 @@ int main()
 
     cout << "\nCiphertext: " << ciphertext << endl;
 
-    // Scenario 1: Hash verification
+    // Scenario 1: Integrity Check
     uint32_t hash1 = fnv1a(ciphertext);
     uint32_t hash2 = fnv1a(ciphertext);
 
@@ -94,10 +109,14 @@ int main()
     if (hash1 == hash2)
     {
         cout << "Integrity Verified: Hashes match\n";
+
+        // Allow decryption
+        string decrypted = decryptRunningKey(ciphertext, key);
+        cout << "Decrypted Text: " << decrypted << endl;
     }
     else
     {
-        cout << "Integrity Failed\n";
+        cout << "Integrity Failed. Decryption Denied.\n";
     }
 
     // Scenario 2: Tampering
@@ -119,10 +138,15 @@ int main()
     if (hash1 != tamperedHash)
     {
         cout << "Tampering Detected: Hash mismatch\n";
+        cout << "Decryption Denied\n";
     }
     else
     {
         cout << "No Tampering Detected\n";
+
+        // Only decrypt if safe
+        string decrypted = decryptRunningKey(tampered, key);
+        cout << "Decrypted Text: " << decrypted << endl;
     }
 
     return 0;

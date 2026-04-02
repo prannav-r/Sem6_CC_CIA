@@ -9,8 +9,10 @@ This project demonstrates a combination of:
 
 It showcases two scenarios:
 
-1. Integrity Verification — ensuring data has not been altered  
-2. Tampering Detection — detecting changes using hash mismatch  
+1. Integrity Verification — ensuring data has not been altered
+2. Tampering Detection — detecting changes using hash mismatch
+
+---
 
 ---
 
@@ -23,6 +25,7 @@ The Running Key Cipher is a polyalphabetic cipher defined as:
 C_i = (P_i + K_i) mod 26
 
 Where:
+
 - P_i: plaintext character
 - K_i: key character
 - C_i: ciphertext character
@@ -34,9 +37,10 @@ Where:
 FNV-1a is a fast, non-cryptographic hash function.
 
 Algorithm:
-hash = (hash XOR byte) * prime
+hash = (hash XOR byte) \* prime
 
 Constants:
+
 - Offset basis: 2166136261
 - Prime: 16777619
 
@@ -80,30 +84,46 @@ uint32_t fnv1a(string text) {
     return hash;
 }
 ```
+
 ---
 
 ## Scenario 1: Integrity Verification
 
-- Compute hash
+- Encrypt plaintext using Running Key Cipher
+- Compute hash of ciphertext
 - Recompute hash
 - Compare both values
 
-If equal → integrity preserved
+If hashes match:
+
+- Integrity is preserved
+- Decryption is allowed
+- Original plaintext is recovered
+
+If hashes do not match:
+
+- Integrity check fails
+- Decryption is denied
 
 ---
 
 ## Scenario 2: Tampering Detection
 
-- Modify ciphertext
+- Modify ciphertext (simulate attack)
 - Recompute hash
-- Compare with original
+- Compare with original hash
 
-If different → tampering detected
+If hashes are different:
 
----
+- Tampering is detected
+- Decryption is denied
+
+If hashes still match (rare case):
+
+- No tampering detected
+- Decryption is allowed
 
 ## Output Screenshot
-
 
 ![Output Screenshot](image.png)
 
